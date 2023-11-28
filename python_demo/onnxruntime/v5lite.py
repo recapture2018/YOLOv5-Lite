@@ -56,7 +56,6 @@ class yolov5_lite():
         # ones with high confidence scores. Assign the box's class label as the class with the highest score.
         classIds = []
         confidences = []
-        box_index = []
         boxes = []
         for detection in outs:
             scores = detection[5:]
@@ -78,9 +77,7 @@ class yolov5_lite():
         print(boxes)
         indices = cv2.dnn.NMSBoxes(boxes, confidences, self.confThreshold, self.nmsThreshold)
 
-        for i in indices:
-            box_index.append(i[0])
-
+        box_index = [i[0] for i in indices]
         for i in box_index:
             box = boxes[i]
             left = box[0]
@@ -95,7 +92,7 @@ class yolov5_lite():
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), thickness=2)
 
         label = '%.2f' % conf
-        label = '%s:%s' % (self.classes[classId], label)
+        label = f'{self.classes[classId]}:{label}'
 
         # Display the label at the top of the bounding box
         labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
@@ -127,7 +124,7 @@ class yolov5_lite():
                 self.anchor_grid[i], h * w, axis=0)
             row_ind += length
         srcimg = self.postprocess(srcimg, outs, (newh, neww, top, left))
-        infer_time = 'Inference Time: ' + str(int(cost_time * 1000)) + 'ms'
+        infer_time = f'Inference Time: {int(cost_time * 1000)}ms'
         cv2.putText(srcimg, infer_time, (5, 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), thickness=1)
         return srcimg
 

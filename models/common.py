@@ -74,7 +74,7 @@ class ContextBlock2d(nn.Module):
     def __init__(self, inplanes, pool='att', fusions=['channel_add', 'channel_mul']):
         super(ContextBlock2d, self).__init__()
         assert pool in ['avg', 'att']
-        assert all([f in ['channel_add', 'channel_mul'] for f in fusions])
+        assert all(f in ['channel_add', 'channel_mul'] for f in fusions)
         assert len(fusions) > 0, 'at least one fusion should be used'
         self.inplanes = inplanes
         self.planes = inplanes // 4
@@ -716,9 +716,7 @@ def round_filters(filters, multiplier, divisor=8, min_width=None):
 
 def round_repeats(repeats, multiplier):
     """Round number of filters based on depth multiplier."""
-    if not multiplier:
-        return repeats
-    return int(math.ceil(multiplier * repeats))
+    return repeats if not multiplier else int(math.ceil(multiplier * repeats))
 
 
 def drop_connect(x, drop_connect_rate, training):
@@ -933,11 +931,7 @@ class RepVGGBlock(nn.Module):
         if hasattr(self, 'rbr_reparam'):
             return self.nonlinearity(self.se(self.rbr_reparam(inputs)))
 
-        if self.rbr_identity is None:
-            id_out = 0
-        else:
-            id_out = self.rbr_identity(inputs)
-
+        id_out = 0 if self.rbr_identity is None else self.rbr_identity(inputs)
         return self.nonlinearity(self.se(self.rbr_dense(inputs) + self.rbr_1x1(inputs) + id_out))
 
     def fusevggforward(self, x):
@@ -987,10 +981,7 @@ class mobilev3_bneck(nn.Module):
 
     def forward(self, x):
         y = self.conv(x)
-        if self.identity:
-            return x + y
-        else:
-            return y
+        return x + y if self.identity else y
 
 
 # mbv3 block end
@@ -1055,8 +1046,7 @@ class LC_SEModule(nn.Module):
         x = self.conv2(x)
         # x = self.hardsigmoid(x)
         x = self.SiLU(x)
-        out = identity * x
-        return out
+        return identity * x
 
 
 class LC_Block(nn.Module):
@@ -1155,8 +1145,7 @@ class ES_SEModule(nn.Module):
         x = self.relu(x)
         x = self.conv2(x)
         x = self.hardsigmoid(x)
-        out = identity * x
-        return out
+        return identity * x
 
 class ES_Bottleneck(nn.Module):
     def __init__(self, inp, oup, stride):

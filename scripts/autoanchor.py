@@ -73,7 +73,7 @@ def kmeans(X, centroids, eps, anchor_file, width_in_cfg_file, height_in_cfg_file
             D.append(d)
         D = np.array(D)  # D.shape = (N,k)
 
-        print("iter {}: dists = {}".format(iter, np.sum(np.abs(old_D - D))))
+        print(f"iter {iter}: dists = {np.sum(np.abs(old_D - D))}")
 
         # assign samples to centroids
         assignments = np.argmin(D, axis=1)
@@ -128,7 +128,7 @@ def main(argv):
         line = line.replace('.png', '.txt')
         print(line)
         f2 = open(line)
-        for line in f2.readlines():
+        for line in f2:
             line = line.rstrip('\n')
             w, h = line.split(' ')[3:]
             annotation_dims.append(tuple(map(float, (w, h))))
@@ -142,13 +142,19 @@ def main(argv):
         for num_clusters in range(1, 11):  # we make 1 through 10 clusters
             anchor_file = join(args.output_dir, 'anchors%d.txt' % (num_clusters))
 
-            indices = [random.randrange(annotation_dims.shape[0]) for i in range(num_clusters)]
+            indices = [
+                random.randrange(annotation_dims.shape[0])
+                for _ in range(num_clusters)
+            ]
             centroids = annotation_dims[indices]
             kmeans(annotation_dims, centroids, eps, anchor_file, width_in_cfg_file, height_in_cfg_file)
             print('centroids.shape', centroids.shape)
     else:
         anchor_file = join(args.output_dir, 'anchors%d.txt' % (args.num_clusters))
-        indices = [random.randrange(annotation_dims.shape[0]) for i in range(args.num_clusters)]
+        indices = [
+            random.randrange(annotation_dims.shape[0])
+            for _ in range(args.num_clusters)
+        ]
         centroids = annotation_dims[indices]
         kmeans(annotation_dims, centroids, eps, anchor_file, width_in_cfg_file, height_in_cfg_file)
         print('centroids.shape', centroids.shape)
