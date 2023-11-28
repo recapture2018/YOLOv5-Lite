@@ -4,6 +4,7 @@ Usage:
     $ export PYTHONPATH="$PWD" && python models/export.py --weights ./weights/yolov5s.pt --img 640 --batch 1
 """
 
+
 import argparse
 import sys
 import time
@@ -85,9 +86,9 @@ if __name__ == '__main__':
         onnx_model = onnx.load(f)  # load onnx model
         onnx.checker.check_model(onnx_model)  # check onnx model
         # print(onnx.helper.printable_graph(onnx_model.graph))  # print a human readable model
-        print('ONNX export success, saved as %s' % f)
+        print(f'ONNX export success, saved as {f}')
     except Exception as e:
-        print('ONNX export failure: %s' % e)
+        print(f'ONNX export failure: {e}')
 
     # Finish
     print('\nExport complete (%.2fs). Visualize with https://github.com/lutzroeder/netron.' % (time.time() - t))

@@ -53,11 +53,9 @@ def mkr(path):
     if os.path.exists(path):
         # 删除后创建
         shutil.rmtree(path)
-        # os.mkdir(path)
-        # os.mkdir创建单层目录；os.makedirs创建多层目录
-        os.makedirs(path)
-    else:
-        os.makedirs(path)
+    # os.mkdir(path)
+    # os.mkdir创建单层目录；os.makedirs创建多层目录
+    os.makedirs(path)
 
 
 # 通过coco数据集的id，得到它的类别名
@@ -92,7 +90,7 @@ def save_annotations_and_imgs(coco, dataset, filename, objs):
     # print(img1.shape)
     try:
         if (img.shape[2] == 1):
-            print(filename + " not a RGB image")
+            print(f"{filename} not a RGB image")
             return
     except:
         print(img_path)
@@ -105,7 +103,7 @@ def save_annotations_and_imgs(coco, dataset, filename, objs):
 
 def showimg(coco, dataset, img, classes, cls_id, show=True):
     global dataDir
-    I = Image.open('%s/%s/%s' % (dataDir, dataset, img['file_name']))
+    I = Image.open(f"{dataDir}/{dataset}/{img['file_name']}")
     # print(I)#
     # 通过id，得到注释的信息
     annIds = coco.getAnnIds(imgIds=img['id'], catIds=cls_id, iscrowd=None)
@@ -140,7 +138,7 @@ def showimg(coco, dataset, img, classes, cls_id, show=True):
 def generate():
     for dataset in datasets_list:
         # ./COCO/annotations/instances_train2014.json
-        annFile = '{}/annotations/instances_{}.json'.format(dataDir, dataset)
+        annFile = f'{dataDir}/annotations/instances_{dataset}.json'
 
         # COCO API for initializing annotated data
         coco = COCO(annFile)
@@ -187,7 +185,7 @@ def split_traintest(trainratio=0.7, valratio=0.2, testratio=0.1):
     tests = []
     random.shuffle(files)
     for i in range(len(files)):
-        filepath = img_dir + "/" + files[i][:-3] + "jpg"  # 找到以上images文件夹下的图片
+        filepath = f"{img_dir}/{files[i][:-3]}jpg"
         # print(filepath)
         if (i < trainratio * len(files)):
             trains.append(files[i])
@@ -198,31 +196,31 @@ def split_traintest(trainratio=0.7, valratio=0.2, testratio=0.1):
         else:
             tests.append(files[i])
     # 生成yolo所用的txt
-    with open(dataset_dir + "/trainval.txt", "w")as f:
+    with open(f"{dataset_dir}/trainval.txt", "w") as f:
         for line in trainvals:
-            line = img_dir + "/" + line
+            line = f"{img_dir}/{line}"
             f.write(line + "\n")
-    with open(dataset_dir + "/test.txt", "w") as f:
+    with open(f"{dataset_dir}/test.txt", "w") as f:
         for line in tests:
-            line = img_dir + "/" + line
+            line = f"{img_dir}/{line}"
             f.write(line + "\n")
 
     # 生成voc所用的txt
-    maindir = dataset_dir + "ImageSets/Main"
+    maindir = f"{dataset_dir}ImageSets/Main"
     mkr(maindir)
-    with open(maindir + "/train.txt", "w") as f:
+    with open(f"{maindir}/train.txt", "w") as f:
         for line in trains:
             line = line[:line.rfind(".")]
             f.write(line + "\n")
-    with open(maindir + "/val.txt", "w") as f:
+    with open(f"{maindir}/val.txt", "w") as f:
         for line in vals:
             line = line[:line.rfind(".")]
             f.write(line + "\n")
-    with open(maindir + "/trainval.txt", "w") as f:
+    with open(f"{maindir}/trainval.txt", "w") as f:
         for line in trainvals:
             line = line[:line.rfind(".")]
             f.write(line + "\n")
-    with open(maindir + "/test.txt", "w") as f:
+    with open(f"{maindir}/test.txt", "w") as f:
         for line in tests:
             line = line[:line.rfind(".")]
             f.write(line + "\n")
@@ -236,9 +234,9 @@ if __name__ == "__main__":
     # 转化后的文件保存路径
     savepath = r"D:\Dataset\person2"
     # 转化后图片保存路径
-    img_dir = savepath + 'images/'
+    img_dir = f'{savepath}images/'
     # 转化后xml保存路径
-    anno_dir = savepath + 'Annotations/'
+    anno_dir = f'{savepath}Annotations/'
     # 选用的数据集列表
     # datasets_list=['train2014', 'val2014']
     datasets_list = ['val2017']
